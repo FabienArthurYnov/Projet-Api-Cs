@@ -12,6 +12,8 @@
 ### WIP
 ---
 
+
+With big help from https://learn.microsoft.com/en-us/aspnet/core
   
 
 ### Auteurs ;
