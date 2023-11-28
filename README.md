@@ -8,7 +8,6 @@
 
 - Run `dotnet run` at the project's root
 
-<br>
 ---
 ### WIP
 ---
