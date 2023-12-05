@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 class ApiServer
 {
+    public static string ConnectionString = "mongodb://localhost:27017/eCommerce";
+
     static async Task Main(string[] args)
     {
         // Define the base URL and port for the server
