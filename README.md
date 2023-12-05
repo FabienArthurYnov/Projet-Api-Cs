@@ -14,6 +14,7 @@
 
 
 With big help from https://learn.microsoft.com/en-us/aspnet/core
+Until I learned we couldn't use ASP.NET
   
 
 ### Auteurs ;
