@@ -3,6 +3,8 @@ using System.Net;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using Controllers;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 class ApiServer
 {
@@ -49,22 +51,40 @@ class ApiServer
         string path = request.Url.ToString();
         string[] pathList = path.Split('/').Skip(3).ToArray();  // split the url in /, and remove the three first item (the http://[website] part), so we have the usefull parts
         
-        // we're not gonna handle it if it's not /api. If we want a front app, maybe later
+        // we're not gonna handle it if it's not /api. If we want a front app, maybe later.
+        // we are also checking the format of the url to prevent further errors
         if (pathList[0] != "api") {
             SendResponse(response, "Api is accessible at http://localhost:8080/api", 200);
+            return;
+        } else if (pathList.Length < 2) {
+            SendResponse(response, "Bad request (400) : the collection of data needs to be specified", 400);
             return;
         }
         
 
         // get the correct Controller
+        Controller controller;
+        switch (pathList[1]) {
+            case "address" :
+                controller = new AddressController();
+                break;
+            default:
+                SendResponse(response, "400 : Bad Request", 400);
+                Console.WriteLine(DateTime.Now.ToString(),  " : Bad Request " + 400 + "(" + pathList[1] + " : no such controller)");
+                return;
+        }
         
-        string responseString = "Not yet implemented";
+        // handle the correct method to the controller
         int statusCode = 500;
+        string content = "Not yet Implemented";
         switch (request.HttpMethod) {
             case "GET":
-                Console.WriteLine("Get");
-                statusCode = 200;
-                break;
+                if (pathList.Length == 2) {  // api/[table]   ; it's a get of a whole table
+                    controller.GetRequest(response);
+                } else {  // api/[table]/[id]  ; get by id
+                    controller.GetByIdRequest(response, int.Parse(pathList[2]));
+                }
+                return;
             case "POST":
                 statusCode = 501;
                 break;
@@ -76,11 +96,13 @@ class ApiServer
                 break;
             default:
                 Console.WriteLine("Unknown method : ", request.HttpMethod);   
-                statusCode = 501;
+                statusCode = 400;
+                content = "Bad request : Unknown method";
                 break;
         }
 
-        SendResponse(response, responseString, statusCode);
+        // If the request was found, nothing gets here. Only happens if request is unhandled.
+        SendResponse(response, content, statusCode);
     }
 
     public static void SendResponse(HttpListenerResponse response, string content, int statusCode = 200)
