@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,8 +40,25 @@ class ApiServer
         // Log the request details
         Console.WriteLine($"Request received: {request.HttpMethod} {request.Url}");
 
-        // HERE MAKE THE RESPONSE and put it in responseString
-        string responseString = "Hello, World!";
+        // check if url is null, which would be weird
+        if (request.Url is null) {
+            Console.WriteLine("Error : request.Url is NULL");
+            SendResponse(response, "500 : Internal Error", 500);
+            return;
+        }
+        string path = request.Url.ToString();
+        string[] pathList = path.Split('/').Skip(3).ToArray();  // split the url in /, and remove the three first item (the http://[website] part), so we have the usefull parts
+        
+        // we're not gonna handle it if it's not /api. If we want a front app, maybe later
+        if (pathList[0] != "api") {
+            SendResponse(response, "Api is accessible at http://localhost:8080/api", 200);
+            return;
+        }
+        
+
+        // get the correct Controller
+        
+        string responseString = "Not yet implemented";
         int statusCode = 500;
         switch (request.HttpMethod) {
             case "GET":
@@ -65,7 +83,7 @@ class ApiServer
         SendResponse(response, responseString, statusCode);
     }
 
-    static void SendResponse(HttpListenerResponse response, string content, int statusCode = 200)
+    public static void SendResponse(HttpListenerResponse response, string content, int statusCode = 200)
     {
         // make the response and send it to outputStream
         response.StatusCode = statusCode;

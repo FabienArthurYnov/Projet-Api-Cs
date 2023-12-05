@@ -10,6 +10,7 @@
 
 ---
 ### WIP
+access it with http://localhost:8080/api
 ---
 
 
