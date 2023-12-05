@@ -1,35 +1,54 @@
-using Microsoft.EntityFrameworkCore;
-using Api.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddDbContext<Context>(opt =>
-    // opt.UseInMemoryDatabase("eCommerce"));
-    opt.UseSqlite("Data Source=eCommerce.db"));
-    // opt.UseSqlServer("Server=localhost;Database=TodoList;User=sa;Password=your_password;");
-    
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+class ApiServer
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    static async Task Main(string[] args)
+    {
+        // Define the base URL and port for the server
+        string url = "http://localhost:8080/";
+
+        // Create an HttpListener and add the prefixes
+        HttpListener listener = new HttpListener();
+        listener.Prefixes.Add(url);
+
+        // Start the listener
+        listener.Start();
+        Console.WriteLine($"Listening on {url}...");
+
+
+        // Handle incoming requests
+        while (true)
+        {
+            // Wait for a request to be processed
+            HttpListenerContext context = await listener.GetContextAsync();
+
+            // Make multiple thread for the requests
+            ThreadPool.QueueUserWorkItem((_) => HandleRequest(context));
+        }
+    }
+
+    static void HandleRequest(HttpListenerContext context)
+    {
+        // Extract the request information
+        HttpListenerRequest request = context.Request;
+        HttpListenerResponse response = context.Response;
+
+        // Log the request details
+        Console.WriteLine($"Request received: {request.HttpMethod} {request.Url}");
+
+        // HERE MAKE THE RESPONSE and put it in responseString
+        string responseString = "Hello, World!";
+
+
+        // make the response and send it to outputStream
+        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+        response.ContentLength64 = buffer.Length;
+        response.OutputStream.Write(buffer, 0, buffer.Length);
+
+        // Close the response stream
+        response.Close();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
