@@ -41,10 +41,35 @@ class ApiServer
 
         // HERE MAKE THE RESPONSE and put it in responseString
         string responseString = "Hello, World!";
+        int statusCode = 500;
+        switch (request.HttpMethod) {
+            case "GET":
+                Console.WriteLine("Get");
+                statusCode = 200;
+                break;
+            case "POST":
+                statusCode = 501;
+                break;
+            case "DELETE":
+                statusCode = 501;
+                break;
+            case "PUT":
+                statusCode = 501;
+                break;
+            default:
+                Console.WriteLine("Unknown method : ", request.HttpMethod);   
+                statusCode = 501;
+                break;
+        }
 
+        SendResponse(response, responseString, statusCode);
+    }
 
+    static void SendResponse(HttpListenerResponse response, string content, int statusCode = 200)
+    {
         // make the response and send it to outputStream
-        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+        response.StatusCode = statusCode;
+        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(content);
         response.ContentLength64 = buffer.Length;
         response.OutputStream.Write(buffer, 0, buffer.Length);
 
