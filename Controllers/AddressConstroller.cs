@@ -8,7 +8,7 @@ class AddressController : Controller
 {
     public override void GetRequest(HttpListenerResponse response, string content = "", int statusCode = 501) {
         // will hold the addresses
-        List<Address> addresses = new List<Address>{};
+        List<Address> addresses = new List<Address>();
 
         // open a new connection
         MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
@@ -31,9 +31,10 @@ class AddressController : Controller
                         AddressString = reader.GetString(2)
                     };
                     // add the new address to the list
-                    addresses.Append(address);
+                    addresses.Add(address);
                 }
             }
+            reader.Close();
             // success, commit
             transaction.Commit();
         } catch (Exception e) {
@@ -42,6 +43,7 @@ class AddressController : Controller
             transaction.Rollback();
             Console.WriteLine("Transaction rolled back");
         }
+
 
         // to json
         string jsonAddresses = JsonSerializer.Serialize(addresses);

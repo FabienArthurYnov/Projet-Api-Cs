@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 class ApiServer
 {
-    public static string ConnectionString = "mongodb://localhost:27017/eCommerce";
+    public static string ConnectionString = "Server=localhost;Port=3306;Database=ecommerce;User Id=root;Password=Test123;";
 
     static async Task Main(string[] args)
     {
