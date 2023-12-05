@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<Context>(opt =>
-    opt.UseInMemoryDatabase("eCommerce"));
+    // opt.UseInMemoryDatabase("eCommerce"));
+    opt.UseSqlite("Data Source=eCommerce.db"));
+    // opt.UseSqlServer("Server=localhost;Database=TodoList;User=sa;Password=your_password;");
     
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
