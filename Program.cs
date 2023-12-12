@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 class ApiServer
 {
-    public static string ConnectionString = "Server=localhost;Port=3306;Database=ecommerce;User Id=root;Password=Test123;";
+    public static string ConnectionString = "Server=localhost;Port=3306;Database=ecommerce;User Id=root;Password=azerty;";
 
     static async Task Main(string[] args)
     {
@@ -88,8 +88,8 @@ class ApiServer
                 }
                 return;
             case "POST":
-                statusCode = 501;
-                break;
+                controller.PostRequest(response, request);
+                return;
             case "DELETE":
                 statusCode = 501;
                 break;

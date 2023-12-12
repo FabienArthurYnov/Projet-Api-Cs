@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Api.Models;
 using MySql.Data.MySqlClient;
@@ -88,7 +89,7 @@ class AddressController : Controller
                     Console.WriteLine("Warning ; multiple result on a GET by Id in Address  (id:"+id.ToString()+")");
                 }
             }
-            reader.Close();
+            reader.Close(); 
             transaction.Commit();
         } catch (Exception e) {
             Console.WriteLine("Error : " + e.Message);
@@ -103,5 +104,47 @@ class AddressController : Controller
 
         base.GetRequest(response, content, statusCode);
     }
+    public override void PostRequest(HttpListenerResponse response, HttpListenerRequest request, string content = "Unimplemented", int statusCode = 501) {
+    {
+        statusCode = 201;  // Created status code for successful POST
 
+        // Deserialize JSON content to Address object
+        StreamReader reader = new StreamReader(request.InputStream, Encoding.UTF8);
+        string body = reader.ReadToEnd();
+        Console.WriteLine(body);
+
+        
+
+        MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
+        connection.Open();
+
+        MySqlTransaction transaction = connection.BeginTransaction();
+        try
+        {
+            // Insert new address into the database
+            string commandString = "INSERT INTO Addresses (UserId, AddressString) VALUES (@UserId, @AddressString);";
+            MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
+            // command.Parameters.AddWithValue("@UserId", newAddress.UserId);
+            // command.Parameters.AddWithValue("@AddressString", newAddress.AddressString);
+
+            command.ExecuteNonQuery();
+
+            // Commit the transaction
+            transaction.Commit();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
+            transaction.Rollback();
+            Console.WriteLine("Transaction rolled back");
+            statusCode = 500;  // Internal Server Error status code
+        }
+        finally
+        {
+            connection.Close();
+        }
+
+        base.PostRequest(response, request, content, statusCode);
+    }
+}
 }
