@@ -23,7 +23,7 @@ class Controller
     }
 
     // DELETE
-    public virtual void DeleteRequest(HttpListenerResponse response, string content = "Unimplemented", int statusCode = 501) {
+    public virtual void DeleteRequest(HttpListenerResponse response, int id, string content = "Unimplemented", int statusCode = 501) {
         Console.WriteLine(DateTime.Now.ToString() +  " : Delete Request " + statusCode.ToString());
         ApiServer.SendResponse(response, content, statusCode);
     }

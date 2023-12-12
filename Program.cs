@@ -91,8 +91,12 @@ class ApiServer
                 controller.PostRequest(response, request);
                 return;
             case "DELETE":
-                statusCode = 501;
-                break;
+                if (pathList.Length == 2) {  // api/[table]   ;
+                    SendResponse(response, "Need to specify Id", 400);
+                } else {  // api/[table]/[id]  ; get by id
+                    controller.DeleteRequest(response, int.Parse(pathList[2]));
+                }
+                return;
             case "PUT":
                 statusCode = 501;
                 break;
