@@ -36,6 +36,13 @@ class AddressController : Controller
                     // add the new address to the list
                     addresses.Add(address);
                 }
+                // to json and change content
+                string jsonAddresses = JsonSerializer.Serialize(addresses);
+                content = jsonAddresses;
+            } else {
+                // there is no row, nothing to return, code 204
+                statusCode = 204;
+                content = "";
             }
             reader.Close();
             // success, commit
@@ -48,13 +55,6 @@ class AddressController : Controller
             // internal error
             statusCode = 500;
         }
-
-
-        // to json
-        string jsonAddresses = JsonSerializer.Serialize(addresses);
-
-        // change content
-        content = jsonAddresses;
 
         base.GetRequest(response, content, statusCode); // base keyword : like super() in java, call the parent class
     }
@@ -82,11 +82,15 @@ class AddressController : Controller
                     UserId = reader.GetInt32(1),
                     AddressString = reader.GetString(2)
                 };
-
                 //check if there is another row
                 if (reader.Read()) {
                     Console.WriteLine("Warning ; multiple result on a GET by Id in Address  (id:"+id.ToString()+")");
                 }
+                string jsonAddresses = JsonSerializer.Serialize(address);
+                content = jsonAddresses;
+            } else {
+                statusCode = 204;
+                content = "";
             }
             reader.Close();
             transaction.Commit();
@@ -97,9 +101,6 @@ class AddressController : Controller
             statusCode = 500;
         }
 
-        string jsonAddresses = JsonSerializer.Serialize(address);
-
-        content = jsonAddresses;
 
         base.GetRequest(response, content, statusCode);
     }
