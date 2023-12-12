@@ -153,13 +153,23 @@ class AddressController : Controller
         MySqlTransaction transaction = connection.BeginTransaction();
         try
         {
-            // Insert new address into the database
-            string commandString = "INSERT INTO Addresses (UserId, AddressString) VALUES (@UserId, @AddressString);";
-            MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
-            // command.Parameters.AddWithValue("@UserId", newAddress.UserId);
-            // command.Parameters.AddWithValue("@AddressString", newAddress.AddressString);
+            Address? JsonInfo  = JsonSerializer.Deserialize<Address>(body);
+            // if it is null ; body couldn't be deserialized into Address. Most likely ; wrong body
+            if (JsonInfo is null) {
+                Console.WriteLine("Error : Wrong body in address ; \n   " + body);
+                content = "Error : Wrong body.\n" + body;
+                statusCode = 400;
+                throw new Exception();
+            }
 
-            command.ExecuteNonQuery();
+            string commandString = "INSERT INTO Addresses (UserId, AddressString) VALUES (@UserId, @AddressString);SELECT LAST_INSERT_ID();";
+            MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
+            command.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
+            command.Parameters.AddWithValue("@AddressString", JsonInfo.AddressString);
+
+            // get the id
+            int addressId = Convert.ToInt32(command.ExecuteScalar());
+            content = "Success : new address can be found at /api/address/" + addressId.ToString();
 
             // Commit the transaction
             transaction.Commit();
@@ -169,7 +179,8 @@ class AddressController : Controller
             Console.WriteLine("Error: " + e.Message);
             transaction.Rollback();
             Console.WriteLine("Transaction rolled back");
-            statusCode = 500;  // Internal Server Error status code
+            content = "400: Bad request";
+            statusCode = 400;  // Internal Server Error status code
         }
         finally
         {
@@ -179,4 +190,5 @@ class AddressController : Controller
         base.PostRequest(response, request, content, statusCode);
     }
 }
+
 }
