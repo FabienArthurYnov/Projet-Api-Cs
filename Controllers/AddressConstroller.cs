@@ -1,3 +1,4 @@
+using System.Data;
 using System.Net;
 using System.Text.Json;
 using Api.Models;
@@ -40,8 +41,7 @@ class AddressController : Controller
                 string jsonAddresses = JsonSerializer.Serialize(addresses);
                 content = jsonAddresses;
             } else {
-                // there is no row, nothing to return, code 204
-                statusCode = 204;
+                // there is no row, nothing to send
                 content = "";
             }
             reader.Close();
@@ -89,7 +89,6 @@ class AddressController : Controller
                 string jsonAddresses = JsonSerializer.Serialize(address);
                 content = jsonAddresses;
             } else {
-                statusCode = 204;
                 content = "";
             }
             reader.Close();
@@ -101,6 +100,38 @@ class AddressController : Controller
             statusCode = 500;
         }
 
+        base.GetRequest(response, content, statusCode);
+    }
+
+
+    public override void DeleteRequest(HttpListenerResponse response, int id, string content = "", int statusCode = 501) {
+        statusCode = 200;
+
+        MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
+        connection.Open();
+        
+        MySqlTransaction transaction = connection.BeginTransaction();
+        try {
+            // the command as a string with correct id
+            string commandString = "DELETE FROM Addresses WHERE AddressId = " + id.ToString() + ";";
+            MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
+            int nbOfAffectedRows = command.ExecuteNonQuery();
+            if (nbOfAffectedRows == 0) {
+                content = "No corresponding Address of id " + id.ToString();
+            } else if (nbOfAffectedRows == 1) {
+                content = "Success : deleted address of id " + id.ToString();
+            } else {
+                content = "Warning : multiple deleted address of id " + id.ToString();
+                Console.WriteLine("Warning : multiple deleted address with id " + id.ToString());
+            }
+            
+            transaction.Commit();
+        } catch (Exception e) {
+            Console.WriteLine("Error : " + e.Message);
+            transaction.Rollback();
+            Console.WriteLine("Transaction rolled back");
+            statusCode = 500;
+        }
 
         base.GetRequest(response, content, statusCode);
     }
