@@ -12,6 +12,10 @@ class ApiServer
 
     static async Task Main(string[] args)
     {
+        if (File.Exists("./connectionString.txt")) {
+            ConnectionString = File.ReadAllText("./connectionString.txt");
+        }
+        
         // Define the base URL and port for the server
         string url = "http://localhost:8080/";
 
@@ -98,8 +102,8 @@ class ApiServer
                 }
                 return;
             case "PUT":
-                statusCode = 501;
-                break;
+                controller.PutRequest(response, int.Parse(pathList[2]), request);
+                return;
             default:
                 Console.WriteLine("Unknown method : ", request.HttpMethod);   
                 statusCode = 400;

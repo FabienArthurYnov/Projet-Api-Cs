@@ -29,7 +29,7 @@ class Controller
     }
 
     // PUT
-    public virtual void PutRequest(HttpListenerResponse response, HttpListenerRequest request, string content = "Unimplemented", int statusCode = 501) {
+    public virtual void PutRequest(HttpListenerResponse response, int id, HttpListenerRequest request, string content = "Unimplemented", int statusCode = 501) {
         Console.WriteLine(DateTime.Now.ToString(),  " : Put Request " + statusCode);
         ApiServer.SendResponse(response, content, statusCode);
     }

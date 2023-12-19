@@ -136,8 +136,8 @@ class AddressController : Controller
 
         base.GetRequest(response, content, statusCode);
     }
+
     public override void PostRequest(HttpListenerResponse response, HttpListenerRequest request, string content = "Unimplemented", int statusCode = 501) {
-    {
         statusCode = 201;  // Created status code for successful POST
 
         // Deserialize JSON content to Address object
@@ -189,6 +189,76 @@ class AddressController : Controller
 
         base.PostRequest(response, request, content, statusCode);
     }
+
+
+    public override void PutRequest(HttpListenerResponse response, int id, HttpListenerRequest request, string content = "", int statusCode = 501) {
+        statusCode = 200;
+        Address address = new Address();
+
+        MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
+        connection.Open();
+        
+        MySqlTransaction transaction = connection.BeginTransaction();
+        try {
+            // GET by id
+
+            // the command as a string with correct id
+            string commandString = "SELECT * FROM Addresses WHERE AddressId = " + id.ToString() + ";";
+            MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
+            MySqlDataReader reader = command.ExecuteReader();
+
+            if (reader.HasRows) {
+                reader.Read();
+                address = new Address
+                {
+                    AddressId = reader.GetInt32(0),
+                    UserId = reader.GetInt32(1),
+                    AddressString = reader.GetString(2)
+                };
+                //check if there is another row
+                if (reader.Read()) {
+                    Console.WriteLine("Warning ; multiple result on a GET by Id in Address  (id:"+id.ToString()+")");
+                }
+                string jsonAddresses = JsonSerializer.Serialize(address);
+                content = jsonAddresses;
+            } else {
+                content = "";
+            }
+            reader.Close(); 
+            if (content == "") {throw new Exception("No Address corresponding to Id");}
+
+            // PUT
+            Address? JsonInfo  = JsonSerializer.Deserialize<Address>(new StreamReader(request.InputStream, Encoding.UTF8).ReadToEnd());
+            // if it is null ; body couldn't be deserialized into Address. Most likely ; wrong body
+            if (JsonInfo is null) {
+                Console.WriteLine("Error : Wrong body in address \n");
+                content = "Error : Wrong body.\n";
+                statusCode = 400;
+                throw new Exception("Wrong body in PUT Address");
+            }
+            if (JsonInfo.UserId is not null) { address.UserId = JsonInfo.UserId;}
+            if (JsonInfo.AddressString is not null) { address.AddressString = JsonInfo.AddressString;}
+
+            // UPDATE
+            Console.WriteLine(address.AddressString);
+            string commandStringInsert = "UPDATE Addresses SET UserId = @UserId, AddressString = @AddressString WHERE Addressid = @AddressId;";
+            MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
+            commandInsert.Parameters.AddWithValue("@AddressId", address.AddressId);
+            commandInsert.Parameters.AddWithValue("@UserId", address.UserId);
+            commandInsert.Parameters.AddWithValue("@AddressString", address.AddressString);
+            commandInsert.ExecuteNonQuery();
+            content = "Success : new address updated " + id.ToString();
+
+            transaction.Commit();
+        } catch (Exception e) {
+            Console.WriteLine("Error : " + e.Message);
+            transaction.Rollback();
+            Console.WriteLine("Transaction rolled back");
+            statusCode = 400;
+            content = "400 : Bad request";
+        }
+
+        base.PutRequest(response, id, request, content, statusCode);
+    }
 }
 
-}
