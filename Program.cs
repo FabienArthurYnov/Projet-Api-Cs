@@ -3,6 +3,7 @@ using System.Net;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using Api.Models;
 using Controllers;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -88,6 +89,9 @@ class ApiServer
                 break;
             case "invoice":
                 controller = new InvoiceController();
+                break;
+            case "cartproduct":
+                controller = new CartProductController();
                 break;
             default:
                 SendResponse(response, "400 : Bad Request", 400);

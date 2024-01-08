@@ -253,10 +253,10 @@ class UserController : Controller
             string commandStringInsert = "UPDATE users SET FirstName = @FirstName, LastName = @LastName, Password = @Password, Email = @Email WHERE UserId = @UserId;";
             MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
             commandInsert.Parameters.AddWithValue("@UserId", user.UserId);
-            commandInsert.Parameters.AddWithValue("@FirstName", user.FirstName);
-            commandInsert.Parameters.AddWithValue("@LastName", user.LastName);
-            commandInsert.Parameters.AddWithValue("@Password", user.Password);
-            commandInsert.Parameters.AddWithValue("@Email", user.Email);
+            commandInsert.Parameters.AddWithValue("@FirstName", JsonInfo.FirstName);
+            commandInsert.Parameters.AddWithValue("@LastName", JsonInfo.LastName);
+            commandInsert.Parameters.AddWithValue("@Password", JsonInfo.Password);
+            commandInsert.Parameters.AddWithValue("@Email", JsonInfo.Email);
             commandInsert.ExecuteNonQuery();
             content = "Success : new user updated " + id.ToString();
 
