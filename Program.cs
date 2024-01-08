@@ -83,6 +83,12 @@ class ApiServer
             case "cart" :
                 controller = new CartController();
                 break;
+            case "command":
+                controller = new CommandController();
+                break;
+            case "invoice":
+                controller = new InvoiceController();
+                break;
             default:
                 SendResponse(response, "400 : Bad Request", 400);
                 Console.WriteLine(DateTime.Now.ToString(),  " : Bad Request " + 400 + "(" + pathList[1] + " : no such controller)");

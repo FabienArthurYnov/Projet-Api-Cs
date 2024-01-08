@@ -6,14 +6,14 @@ using Api.Models;
 using MySql.Data.MySqlClient;
 
 namespace Controllers;
-class ProductControllers : Controller
+class CommandController : Controller
 {
     public override void GetRequest(HttpListenerResponse response, string content = "", int statusCode = 501) {
         // status ok if not overriden by unexpected events
         statusCode = 200;
 
-        // will hold the products
-        List<Product> products = new List<Product>();
+        // will hold the commands
+        List<Command> commands = new List<Command>();
 
         // open a new connection
         MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
@@ -23,27 +23,27 @@ class ProductControllers : Controller
         MySqlTransaction transaction = connection.BeginTransaction();
         try {
             // create a new command and the reader for its output
-            MySqlCommand command = new MySqlCommand("SELECT * FROM products;", connection, transaction);
+            MySqlCommand command = new MySqlCommand("SELECT * FROM commands;", connection, transaction);
             MySqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows) { // in case it's empty, there is nothing to read
                 while (reader.Read()) {
-                    // read the new product
-                    Product product = new Product
+                    // read the new Command
+                    Command Command = new Command
                     {
-                        ProductId = reader.GetInt32(0),
-                        NameProduct = reader.GetString(1),
-                        TypeProduct = reader.GetString(2),
-                        DescriptionProduct = reader.GetString(3),
+                        CommandId = reader.GetInt32(0),
+                        UserId = reader.GetInt32(1),
+                        NameProduct = reader.GetString(2),
+                        TypeProduct = reader.GetString(3),
                         Price = reader.GetFloat(4),
                         StatusProduct = reader.GetInt32(5)
                     };
-                    // add the new product to the list
-                    products.Add(product);
+                    // add the new Command to the list
+                    commands.Add(Command);
                 }
                 // to json and change content
-                string jsonproducts = JsonSerializer.Serialize(products);
-                content = jsonproducts;
+                string jsoncommands = JsonSerializer.Serialize(commands);
+                content = jsoncommands;
             } else {
                 // there is no row, nothing to send
                 content = "";
@@ -66,7 +66,7 @@ class ProductControllers : Controller
 
     public override void GetByIdRequest(HttpListenerResponse response, int id, string content = "", int statusCode = 501) {
         statusCode = 200;
-        Product product = new Product();
+        Command Command = new Command();
 
         MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
         connection.Open();
@@ -74,27 +74,27 @@ class ProductControllers : Controller
         MySqlTransaction transaction = connection.BeginTransaction();
         try {
             // the command as a string with correct id
-            string commandString = "SELECT * FROM products WHERE ProductId = " + id.ToString() + ";";
+            string commandString = "SELECT * FROM commands WHERE CommandId = " + id.ToString() + ";";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
             MySqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows) {
                 reader.Read();
-                product = new Product
+                Command = new Command
                 {
-                    ProductId = reader.GetInt32(0),
-                    NameProduct = reader.GetString(1),
-                    TypeProduct = reader.GetString(2),
-                    DescriptionProduct = reader.GetString(3),
+                    CommandId = reader.GetInt32(0),
+                    UserId = reader.GetInt32(1),
+                    NameProduct = reader.GetString(2),
+                    TypeProduct = reader.GetString(3),
                     Price = reader.GetFloat(4),
                     StatusProduct = reader.GetInt32(5)
                 };
                 //check if there is another row
                 if (reader.Read()) {
-                    Console.WriteLine("Warning ; multiple result on a GET by Id in product  (id:"+id.ToString()+")");
+                    Console.WriteLine("Warning ; multiple result on a GET by Id in Command  (id:"+id.ToString()+")");
                 }
-                string jsonproducts = JsonSerializer.Serialize(product);
-                content = jsonproducts;
+                string jsoncommands = JsonSerializer.Serialize(Command);
+                content = jsoncommands;
             } else {
                 content = "";
             }
@@ -120,16 +120,16 @@ class ProductControllers : Controller
         MySqlTransaction transaction = connection.BeginTransaction();
         try {
             // the command as a string with correct id
-            string commandString = "DELETE FROM products WHERE ProductId = " + id.ToString() + ";";
+            string commandString = "DELETE FROM commands WHERE CommandId = " + id.ToString() + ";";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
             int nbOfAffectedRows = command.ExecuteNonQuery();
             if (nbOfAffectedRows == 0) {
-                content = "No corresponding product of id " + id.ToString();
+                content = "No corresponding Command of id " + id.ToString();
             } else if (nbOfAffectedRows == 1) {
-                content = "Success : deleted product of id " + id.ToString();
+                content = "Success : deleted Command of id " + id.ToString();
             } else {
-                content = "Warning : multiple deleted product of id " + id.ToString();
-                Console.WriteLine("Warning : multiple deleted product with id " + id.ToString());
+                content = "Warning : multiple deleted Command of id " + id.ToString();
+                Console.WriteLine("Warning : multiple deleted Command with id " + id.ToString());
             }
             
             transaction.Commit();
@@ -146,7 +146,7 @@ class ProductControllers : Controller
     public override void PostRequest(HttpListenerResponse response, HttpListenerRequest request, string content = "Unimplemented", int statusCode = 501) {
         statusCode = 201;  // Created status code for successful POST
 
-        // Deserialize JSON content to product object
+        // Deserialize JSON content to Command object
         StreamReader reader = new StreamReader(request.InputStream, Encoding.UTF8);
         string body = reader.ReadToEnd();
         Console.WriteLine(body);
@@ -159,26 +159,26 @@ class ProductControllers : Controller
         MySqlTransaction transaction = connection.BeginTransaction();
         try
         {
-            Product? JsonInfo  = JsonSerializer.Deserialize<Product>(body);
-            // if it is null ; body couldn't be deserialized into product. Most likely ; wrong body
+            Command? JsonInfo  = JsonSerializer.Deserialize<Command>(body);
+            // if it is null ; body couldn't be deserialized into Command. Most likely ; wrong body
             if (JsonInfo is null) {
-                Console.WriteLine("Error : Wrong body in product ; \n   " + body);
+                Console.WriteLine("Error : Wrong body in Command ; \n   " + body);
                 content = "Error : Wrong body.\n" + body;
                 statusCode = 400;
                 throw new Exception();
             }
 
-            string commandString = "INSERT INTO products (NameProduct, TypeProduct, DescriptionProduct, Price, StatusProduct) VALUES (@NameProduct, @TypeProduct, @DescriptionProduct, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
+            string commandString = "INSERT INTO commands (UserId, NameProduct, TypeProduct, Price, StatusProduct) VALUES (@UserId, @NameProduct, @TypeProduct, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
+            command.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
             command.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
             command.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
-            command.Parameters.AddWithValue("@DescriptionProduct", JsonInfo.DescriptionProduct);
             command.Parameters.AddWithValue("@Price", JsonInfo.Price);
             command.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
 
             // get the id
-            int productId = Convert.ToInt32(command.ExecuteScalar());
-            content = "Success : new product can be found at /api/product/" + productId.ToString();
+            int CommandId = Convert.ToInt32(command.ExecuteScalar());
+            content = "Success : new Command can be found at /api/Command/" + CommandId.ToString();
 
             // Commit the transaction
             transaction.Commit();
@@ -202,7 +202,7 @@ class ProductControllers : Controller
 
     public override void PutRequest(HttpListenerResponse response, int id, HttpListenerRequest request, string content = "", int statusCode = 501) {
         statusCode = 200;
-        Product product = new Product();
+        Command Command = new Command();
 
         MySqlConnection connection = new MySqlConnection(ApiServer.ConnectionString);
         connection.Open();
@@ -212,59 +212,59 @@ class ProductControllers : Controller
             // GET by id
 
             // the command as a string with correct id
-            string commandString = "SELECT * FROM products WHERE ProductId = " + id.ToString() + ";";
+            string commandString = "SELECT * FROM commands WHERE CommandId = " + id.ToString() + ";";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
             MySqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows) {
                 reader.Read();
-                product = new Product
+                Command = new Command
                 {
-                    ProductId = reader.GetInt32(0),
-                    NameProduct = reader.GetString(1),
-                    TypeProduct = reader.GetString(2),
-                    DescriptionProduct = reader.GetString(3),
+                    CommandId = reader.GetInt32(0),
+                    UserId = reader.GetInt32(1),
+                    NameProduct = reader.GetString(2),
+                    TypeProduct = reader.GetString(3),
                     Price = reader.GetFloat(4),
                     StatusProduct = reader.GetInt32(5)
                 };
                 //check if there is another row
                 if (reader.Read()) {
-                    Console.WriteLine("Warning ; multiple result on a GET by Id in product  (id:"+id.ToString()+")");
+                    Console.WriteLine("Warning ; multiple result on a GET by Id in Command  (id:"+id.ToString()+")");
                 }
-                string jsonproducts = JsonSerializer.Serialize(product);
-                content = jsonproducts;
+                string jsoncommands = JsonSerializer.Serialize(Command);
+                content = jsoncommands;
             } else {
                 content = "";
             }
             reader.Close(); 
-            if (content == "") {throw new Exception("No product corresponding to Id");}
+            if (content == "") {throw new Exception("No Command corresponding to Id");}
 
             // PUT
-            Product? JsonInfo  = JsonSerializer.Deserialize<Product>(new StreamReader(request.InputStream, Encoding.UTF8).ReadToEnd());
-            // if it is null ; body couldn't be deserialized into product. Most likely ; wrong body
+            Command? JsonInfo  = JsonSerializer.Deserialize<Command>(new StreamReader(request.InputStream, Encoding.UTF8).ReadToEnd());
+            // if it is null ; body couldn't be deserialized into Command. Most likely ; wrong body
             if (JsonInfo is null) {
-                Console.WriteLine("Error : Wrong body in product \n");
+                Console.WriteLine("Error : Wrong body in Command \n");
                 content = "Error : Wrong body.\n";
                 statusCode = 400;
-                throw new Exception("Wrong body in PUT product");
+                throw new Exception("Wrong body in PUT Command");
             }
-            if (JsonInfo.NameProduct is not null) { product.NameProduct = JsonInfo.NameProduct;}
-            if (JsonInfo.TypeProduct is not null) { product.TypeProduct = JsonInfo.TypeProduct;}
-            if (JsonInfo.DescriptionProduct is not null) { product.DescriptionProduct = JsonInfo.DescriptionProduct;}
-            if (JsonInfo.Price is not 0) { product.Price = JsonInfo.Price;}
-            if (JsonInfo.StatusProduct is not 0) { product.StatusProduct = JsonInfo.StatusProduct;}
+            if (JsonInfo.UserId is not 0) { Command.UserId = JsonInfo.UserId;}
+            if (JsonInfo.NameProduct is not null) { Command.NameProduct = JsonInfo.NameProduct;}
+            if (JsonInfo.TypeProduct is not null) { Command.TypeProduct = JsonInfo.TypeProduct;}
+            if (JsonInfo.Price is not 0) { Command.Price = JsonInfo.Price;}
+            if (JsonInfo.StatusProduct is not 0) { Command.StatusProduct = JsonInfo.StatusProduct;}
 
             // UPDATE
-            string commandStringInsert = "UPDATE products SET NameProduct = @NameProduct, TypeProduct = @TypeProduct, DescriptionProduct = @DescriptionProduct, Price = @Price, StatusProduct = @StatusProduct WHERE ProductId = @ProductId;";
+            string commandStringInsert = "UPDATE commands SET UserId = @UserId, NameProduct = @NameProduct, TypeProduct = @TypeProduct, Price = @Price, StatusProduct = @StatusProduct WHERE CommandId = @CommandId;";
             MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
-            commandInsert.Parameters.AddWithValue("@ProductId", product.ProductId);
+            commandInsert.Parameters.AddWithValue("@CommandId", Command.CommandId);
+            commandInsert.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
             commandInsert.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
             commandInsert.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
-            commandInsert.Parameters.AddWithValue("@DescriptionProduct", JsonInfo.DescriptionProduct);
             commandInsert.Parameters.AddWithValue("@Price", JsonInfo.Price);
             commandInsert.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
             commandInsert.ExecuteNonQuery();
-            content = "Success : new product updated " + id.ToString();
+            content = "Success : new Command updated " + id.ToString();
 
             transaction.Commit();
         } catch (Exception e) {

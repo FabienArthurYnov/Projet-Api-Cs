@@ -258,11 +258,11 @@ class CartController : Controller
             string commandStringInsert = "UPDATE carts SET UserId = @UserId, NameProduct = @NameProduct, TypeProduct = @TypeProduct, Price = @Price, StatusProduct = @StatusProduct WHERE CartId = @CartId;";
             MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
             commandInsert.Parameters.AddWithValue("@CartId", Cart.CartId);
-            command.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
-            command.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
-            command.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
-            command.Parameters.AddWithValue("@Price", JsonInfo.Price);
-            command.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
+            commandInsert.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
+            commandInsert.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
+            commandInsert.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
+            commandInsert.Parameters.AddWithValue("@Price", JsonInfo.Price);
+            commandInsert.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
             commandInsert.ExecuteNonQuery();
             content = "Success : new Cart updated " + id.ToString();
 
