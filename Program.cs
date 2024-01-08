@@ -74,6 +74,12 @@ class ApiServer
             case "address" :
                 controller = new AddressController();
                 break;
+            case "user" :
+                controller = new UserController();
+                break;
+            case "poduct" :
+                controller = new ProductControllers();
+                break;
             default:
                 SendResponse(response, "400 : Bad Request", 400);
                 Console.WriteLine(DateTime.Now.ToString(),  " : Bad Request " + 400 + "(" + pathList[1] + " : no such controller)");

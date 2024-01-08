@@ -6,5 +6,5 @@ public class Product {
     public string? TypeProduct { get; set;}
     public string? DescriptionProduct { get; set;}
     public float Price { get; set;}
-    public bool StatusProduct {get; set;}
+    public int StatusProduct {get; set;}
 }
