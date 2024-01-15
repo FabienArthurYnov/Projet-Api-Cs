@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users 
 (
-    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserId INTEGER PRIMARY KEY AUTO_INCREMENT,
     FirstName VARCHAR(80),
     LastName VARCHAR(80),
     Password VARCHAR(80),
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS addresses
 (
-    AddressId INTEGER PRIMARY KEY AUTOINCREMENT,
+    AddressId INTEGER PRIMARY KEY AUTO_INCREMENT,
     UserId INT,
     AddressString VARCHAR(100),
     FOREIGN KEY (UserId) REFERENCES users(UserId)
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS addresses
 
 CREATE TABLE IF NOT EXISTS products
 (
-    ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProductId INTEGER PRIMARY KEY AUTO_INCREMENT,
     NameProduct VARCHAR(100),
     TypeProduct VARCHAR(100),
     DescriptionProduct VARCHAR(500),
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS products
 
 CREATE TABLE IF NOT EXISTS carts
 (
-    CartId INTEGER PRIMARY KEY AUTOINCREMENT,
+    CartId INTEGER PRIMARY KEY AUTO_INCREMENT,
     UserId INT,
     Price REAL,
     StatusProduct INT,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS carts
 
 CREATE TABLE IF NOT EXISTS commands
 (
-    CommandId INTEGER PRIMARY KEY AUTOINCREMENT,
+    CommandId INTEGER PRIMARY KEY AUTO_INCREMENT,
     UserId INT,
     Price REAL,
     StatusProduct INT,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS commands
 
 CREATE TABLE IF NOT EXISTS invoices
 (
-    InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    InvoiceId INTEGER PRIMARY KEY AUTO_INCREMENT,
     UserId INT,
     Price REAL,
     StatusProduct INT,
@@ -54,27 +54,27 @@ CREATE TABLE IF NOT EXISTS invoices
 
 CREATE TABLE IF NOT EXISTS carts_products
 (
-    CartProductId INTEGER PRIMARY KEY AUTOINCREMENT,
+    CartProductId INTEGER PRIMARY KEY AUTO_INCREMENT,
     CartId INTEGER,
     ProductId INTEGER,
-    FOREIGN KEY (CartId) REFERENCES cart(CartId),
-    FOREIGN KEY (ProductId) REFERENCES product(ProductId)
+    FOREIGN KEY (CartId) REFERENCES carts(CartId),
+    FOREIGN KEY (ProductId) REFERENCES products(ProductId)
 );
 
 CREATE TABLE IF NOT EXISTS commands_products
 (
-    CommandProductId INTEGER PRIMARY KEY AUTOINCREMENT,
+    CommandProductId INTEGER PRIMARY KEY AUTO_INCREMENT,
     CommandId INTEGER,
     ProductId INTEGER,
-    FOREIGN KEY (CommandId) REFERENCES command(CommandId),
-    FOREIGN KEY (ProductId) REFERENCES product(ProductId)
+    FOREIGN KEY (CommandId) REFERENCES commands(CommandId),
+    FOREIGN KEY (ProductId) REFERENCES products(ProductId)
 );
 
 CREATE TABLE IF NOT EXISTS invoices_products
 (
-    InvoiceProductId INTEGER PRIMARY KEY AUTOINCREMENT,
+    InvoiceProductId INTEGER PRIMARY KEY AUTO_INCREMENT,
     InvoiceId INTEGER,
     ProductId INTEGER,
     FOREIGN KEY (InvoiceId) REFERENCES invoices(InvoiceId),
-    FOREIGN KEY (ProductId) REFERENCES product(ProductId)
+    FOREIGN KEY (ProductId) REFERENCES products(ProductId)
 );
