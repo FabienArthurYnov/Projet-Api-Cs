@@ -29,8 +29,6 @@ CREATE TABLE IF NOT EXISTS carts
 (
     CartId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INT,
-    NameProduct VARCHAR(100),
-    TypeProduct VARCHAR(100),
     Price REAL,
     StatusProduct INT,
     FOREIGN KEY (UserId) REFERENCES users(UserId)
@@ -40,8 +38,6 @@ CREATE TABLE IF NOT EXISTS commands
 (
     CommandId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INT,
-    NameProduct VARCHAR(100),
-    TypeProduct VARCHAR(100),
     Price REAL,
     StatusProduct INT,
     FOREIGN KEY (UserId) REFERENCES users(UserId)
@@ -51,8 +47,6 @@ CREATE TABLE IF NOT EXISTS invoices
 (
     InvoiceId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INT,
-    NameProduct VARCHAR(100),
-    TypeProduct VARCHAR(100),
     Price REAL,
     StatusProduct INT,
     FOREIGN KEY (UserId) REFERENCES users(UserId)
