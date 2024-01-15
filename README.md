@@ -16,8 +16,17 @@
 ## How to use :
 access it with http://[server]:8080/api
 
-./api/address : user's addresses.   int AddressId, int UserId, string AddressString
-./api/cart : user's carts.   
+- ./api/address : user's addresses.   int AddressId, int UserId, string AddressString
+
+- ./api/cart : user's carts.   int CartId, int UserId, float Price, int StatusProdct
+- ./api/cartproduct : link a product to a cart.   int CartProductId, int CartId, int ProductId
+- ./api/command : user's commands.   int CommandId, int UserId, float Price, int StatusProdct
+- ./api/commandproduct : link a product to a command.   int CommandProductId, int CommandId, int ProductId
+- ./api/invoice : user's invoices.   int InvoiceId, int UserId, float Price, int StatusProdct
+- ./api/invoiceproduct : link a product to an invoice.   int InvoiceProductId, int InvoiceId, int ProductId
+
+- ./api/product : a Product.   int ProductId, string NameProduct, string TypeProduct, string DescriptionProduct, float price, int StatusProduct
+- ./api/user : a User.   int UserId, string FirstName, string LastName, string Password, string Email
 ---
 
   
