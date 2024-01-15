@@ -78,7 +78,7 @@ class ApiServer
             case "user" :
                 controller = new UserController();
                 break;
-            case "poduct" :
+            case "product" :
                 controller = new ProductControllers();
                 break;
             case "cart" :
