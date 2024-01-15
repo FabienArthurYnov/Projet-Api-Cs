@@ -33,10 +33,8 @@ class InvoiceController : Controller
                     {
                         InvoiceId = reader.GetInt32(0),
                         UserId = reader.GetInt32(1),
-                        NameProduct = reader.GetString(2),
-                        TypeProduct = reader.GetString(3),
-                        Price = reader.GetFloat(4),
-                        StatusProduct = reader.GetInt32(5)
+                        Price = reader.GetFloat(2),
+                        StatusProduct = reader.GetInt32(3)
                     };
                     // add the new Invoice to the list
                     invoices.Add(Invoice);
@@ -84,10 +82,8 @@ class InvoiceController : Controller
                 {
                     InvoiceId = reader.GetInt32(0),
                     UserId = reader.GetInt32(1),
-                    NameProduct = reader.GetString(2),
-                    TypeProduct = reader.GetString(3),
-                    Price = reader.GetFloat(4),
-                    StatusProduct = reader.GetInt32(5)
+                    Price = reader.GetFloat(2),
+                    StatusProduct = reader.GetInt32(3)
                 };
                 //check if there is another row
                 if (reader.Read()) {
@@ -168,11 +164,9 @@ class InvoiceController : Controller
                 throw new Exception();
             }
 
-            string commandString = "INSERT INTO invoices (UserId, NameProduct, TypeProduct, Price, StatusProduct) VALUES (@UserId, @NameProduct, @TypeProduct, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
+            string commandString = "INSERT INTO invoices (UserId, Price, StatusProduct) VALUES (@UserId, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
             command.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
-            command.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
-            command.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
             command.Parameters.AddWithValue("@Price", JsonInfo.Price);
             command.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
 
@@ -222,10 +216,8 @@ class InvoiceController : Controller
                 {
                     InvoiceId = reader.GetInt32(0),
                     UserId = reader.GetInt32(1),
-                    NameProduct = reader.GetString(2),
-                    TypeProduct = reader.GetString(3),
-                    Price = reader.GetFloat(4),
-                    StatusProduct = reader.GetInt32(5)
+                    Price = reader.GetFloat(2),
+                    StatusProduct = reader.GetInt32(3)
                 };
                 //check if there is another row
                 if (reader.Read()) {
@@ -249,18 +241,14 @@ class InvoiceController : Controller
                 throw new Exception("Wrong body in PUT Invoice");
             }
             if (JsonInfo.UserId is not 0) { Invoice.UserId = JsonInfo.UserId;}
-            if (JsonInfo.NameProduct is not null) { Invoice.NameProduct = JsonInfo.NameProduct;}
-            if (JsonInfo.TypeProduct is not null) { Invoice.TypeProduct = JsonInfo.TypeProduct;}
             if (JsonInfo.Price is not 0) { Invoice.Price = JsonInfo.Price;}
             if (JsonInfo.StatusProduct is not 0) { Invoice.StatusProduct = JsonInfo.StatusProduct;}
 
             // UPDATE
-            string commandStringInsert = "UPDATE invoices SET UserId = @UserId, NameProduct = @NameProduct, TypeProduct = @TypeProduct, Price = @Price, StatusProduct = @StatusProduct WHERE InvoiceId = @InvoiceId;";
+            string commandStringInsert = "UPDATE invoices SET UserId = @UserId, Price = @Price, StatusProduct = @StatusProduct WHERE InvoiceId = @InvoiceId;";
             MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
             commandInsert.Parameters.AddWithValue("@InvoiceId", Invoice.InvoiceId);
             commandInsert.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
-            commandInsert.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
-            commandInsert.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
             commandInsert.Parameters.AddWithValue("@Price", JsonInfo.Price);
             commandInsert.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
             commandInsert.ExecuteNonQuery();

@@ -33,10 +33,8 @@ class CommandController : Controller
                     {
                         CommandId = reader.GetInt32(0),
                         UserId = reader.GetInt32(1),
-                        NameProduct = reader.GetString(2),
-                        TypeProduct = reader.GetString(3),
-                        Price = reader.GetFloat(4),
-                        StatusProduct = reader.GetInt32(5)
+                        Price = reader.GetFloat(2),
+                        StatusProduct = reader.GetInt32(3)
                     };
                     // add the new Command to the list
                     commands.Add(Command);
@@ -84,10 +82,8 @@ class CommandController : Controller
                 {
                     CommandId = reader.GetInt32(0),
                     UserId = reader.GetInt32(1),
-                    NameProduct = reader.GetString(2),
-                    TypeProduct = reader.GetString(3),
-                    Price = reader.GetFloat(4),
-                    StatusProduct = reader.GetInt32(5)
+                    Price = reader.GetFloat(2),
+                    StatusProduct = reader.GetInt32(3)
                 };
                 //check if there is another row
                 if (reader.Read()) {
@@ -168,11 +164,9 @@ class CommandController : Controller
                 throw new Exception();
             }
 
-            string commandString = "INSERT INTO commands (UserId, NameProduct, TypeProduct, Price, StatusProduct) VALUES (@UserId, @NameProduct, @TypeProduct, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
+            string commandString = "INSERT INTO commands (UserId, Price, StatusProduct) VALUES (@UserId, @Price, @StatusProduct);SELECT LAST_INSERT_ID();";
             MySqlCommand command = new MySqlCommand(commandString, connection, transaction);
             command.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
-            command.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
-            command.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
             command.Parameters.AddWithValue("@Price", JsonInfo.Price);
             command.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
 
@@ -222,10 +216,8 @@ class CommandController : Controller
                 {
                     CommandId = reader.GetInt32(0),
                     UserId = reader.GetInt32(1),
-                    NameProduct = reader.GetString(2),
-                    TypeProduct = reader.GetString(3),
-                    Price = reader.GetFloat(4),
-                    StatusProduct = reader.GetInt32(5)
+                    Price = reader.GetFloat(2),
+                    StatusProduct = reader.GetInt32(3)
                 };
                 //check if there is another row
                 if (reader.Read()) {
@@ -249,18 +241,14 @@ class CommandController : Controller
                 throw new Exception("Wrong body in PUT Command");
             }
             if (JsonInfo.UserId is not 0) { Command.UserId = JsonInfo.UserId;}
-            if (JsonInfo.NameProduct is not null) { Command.NameProduct = JsonInfo.NameProduct;}
-            if (JsonInfo.TypeProduct is not null) { Command.TypeProduct = JsonInfo.TypeProduct;}
             if (JsonInfo.Price is not 0) { Command.Price = JsonInfo.Price;}
             if (JsonInfo.StatusProduct is not 0) { Command.StatusProduct = JsonInfo.StatusProduct;}
 
             // UPDATE
-            string commandStringInsert = "UPDATE commands SET UserId = @UserId, NameProduct = @NameProduct, TypeProduct = @TypeProduct, Price = @Price, StatusProduct = @StatusProduct WHERE CommandId = @CommandId;";
+            string commandStringInsert = "UPDATE commands SET UserId = @UserId, Price = @Price, StatusProduct = @StatusProduct WHERE CommandId = @CommandId;";
             MySqlCommand commandInsert = new MySqlCommand(commandStringInsert, connection, transaction);
             commandInsert.Parameters.AddWithValue("@CommandId", Command.CommandId);
             commandInsert.Parameters.AddWithValue("@UserId", JsonInfo.UserId);
-            commandInsert.Parameters.AddWithValue("@NameProduct", JsonInfo.NameProduct);
-            commandInsert.Parameters.AddWithValue("@TypeProduct", JsonInfo.TypeProduct);
             commandInsert.Parameters.AddWithValue("@Price", JsonInfo.Price);
             commandInsert.Parameters.AddWithValue("@StatusProduct", JsonInfo.StatusProduct);
             commandInsert.ExecuteNonQuery();
