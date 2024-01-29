@@ -58,7 +58,7 @@ class UserController : Controller
             // internal error
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode); // base keyword : like super() in java, call the parent class
     }
 
@@ -104,7 +104,7 @@ class UserController : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -137,7 +137,7 @@ class UserController : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -192,7 +192,7 @@ class UserController : Controller
         {
             connection.Close();
         }
-
+        connection.Close();
         base.PostRequest(response, request, content, statusCode);
     }
 
@@ -268,7 +268,7 @@ class UserController : Controller
             statusCode = 400;
             content = "400 : Bad request";
         }
-
+        connection.Close();
         base.PutRequest(response, id, request, content, statusCode);
     }
 }

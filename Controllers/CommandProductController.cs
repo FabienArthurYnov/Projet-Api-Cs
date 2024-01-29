@@ -56,7 +56,7 @@ class CommandProductController : Controller
             // internal error
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode); // base keyword : like super() in java, call the parent class
     }
 
@@ -100,7 +100,7 @@ class CommandProductController : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -133,7 +133,7 @@ class CommandProductController : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -186,7 +186,7 @@ class CommandProductController : Controller
         {
             connection.Close();
         }
-
+        connection.Close();
         base.PostRequest(response, request, content, statusCode);
     }
 
@@ -256,7 +256,7 @@ class CommandProductController : Controller
             statusCode = 400;
             content = "400 : Bad request";
         }
-
+        connection.Close();
         base.PutRequest(response, id, request, content, statusCode);
     }
 }
