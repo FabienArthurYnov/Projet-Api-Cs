@@ -16,6 +16,8 @@
 ## How to use :
 access it with http://[server]:8080/api
 
+Don't add the itemId, first field, when posting. It is added automatically.
+
 - ./api/address : user's addresses.   int AddressId, int UserId, string AddressString
 
 - ./api/cart : user's carts.   int CartId, int UserId, float Price, int StatusProdct
@@ -35,7 +37,7 @@ access it with http://[server]:8080/api
 
 -- Fabien ARTHUR
 
--- Alexandre XIN
+-- Alexandre JIN
 
 -- Gabriel GARCIA
 
