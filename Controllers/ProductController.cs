@@ -107,7 +107,7 @@ class ProductControllers : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -140,7 +140,7 @@ class ProductControllers : Controller
             Console.WriteLine("Transaction rolled back");
             statusCode = 500;
         }
-
+        connection.Close();
         base.GetRequest(response, content, statusCode);
     }
 
@@ -196,7 +196,7 @@ class ProductControllers : Controller
         {
             connection.Close();
         }
-
+        connection.Close();
         base.PostRequest(response, request, content, statusCode);
     }
 
@@ -275,7 +275,7 @@ class ProductControllers : Controller
             statusCode = 400;
             content = "400 : Bad request";
         }
-
+        connection.Close();
         base.PutRequest(response, id, request, content, statusCode);
     }
 }
